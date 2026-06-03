@@ -6,9 +6,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Eraser,
+  ExternalLink,
+  BookOpen,
   Play,
   Plus,
   RotateCcw,
+  Search,
   Sparkles,
   Trash2,
 } from 'lucide-react'
@@ -17,6 +20,13 @@ import './App.css'
 type RadicalGroup = {
   strokes: number
   characters: string[]
+}
+
+type DictionaryEntry = {
+  jyutping: string
+  pinyin: string
+  meaning: string
+  examples: string[]
 }
 
 const radicalGroups: RadicalGroup[] = [
@@ -310,6 +320,74 @@ const strokePalette = [
   '#2d8bb8',
 ]
 
+const dictionaryEntries: Record<string, DictionaryEntry> = {
+  一: { jyutping: 'jat1', pinyin: 'yi1', meaning: 'one; first', examples: ['一個', '一日', '第一'] },
+  二: { jyutping: 'ji6', pinyin: 'er4', meaning: 'two', examples: ['二月', '二人', '第二'] },
+  三: { jyutping: 'saam1', pinyin: 'san1', meaning: 'three', examples: ['三日', '三個', '三年'] },
+  四: { jyutping: 'sei3', pinyin: 'si4', meaning: 'four', examples: ['四月', '四方', '第四'] },
+  五: { jyutping: 'ng5', pinyin: 'wu3', meaning: 'five', examples: ['五月', '五個', '星期五'] },
+  六: { jyutping: 'luk6', pinyin: 'liu4', meaning: 'six', examples: ['六月', '六個', '星期六'] },
+  七: { jyutping: 'cat1', pinyin: 'qi1', meaning: 'seven', examples: ['七月', '七個', '七天'] },
+  八: { jyutping: 'baat3', pinyin: 'ba1', meaning: 'eight', examples: ['八月', '八個', '八方'] },
+  九: { jyutping: 'gau2', pinyin: 'jiu3', meaning: 'nine', examples: ['九月', '九個', '九龍'] },
+  十: { jyutping: 'sap6', pinyin: 'shi2', meaning: 'ten', examples: ['十月', '十個', '十分'] },
+  我: { jyutping: 'ngo5', pinyin: 'wo3', meaning: 'I; me', examples: ['我們', '我家', '我的'] },
+  你: { jyutping: 'nei5', pinyin: 'ni3', meaning: 'you', examples: ['你好', '你們', '你的'] },
+  他: { jyutping: 'taa1', pinyin: 'ta1', meaning: 'he; him', examples: ['他們', '他的', '他人'] },
+  她: { jyutping: 'taa1', pinyin: 'ta1', meaning: 'she; her', examples: ['她們', '她的', '她家'] },
+  們: { jyutping: 'mun4', pinyin: 'men5', meaning: 'plural marker for people', examples: ['我們', '你們', '同學們'] },
+  的: { jyutping: 'dik1', pinyin: 'de5', meaning: 'possessive particle; of', examples: ['我的', '好的', '看的'] },
+  是: { jyutping: 'si6', pinyin: 'shi4', meaning: 'to be; yes', examples: ['我是', '不是', '是的'] },
+  不: { jyutping: 'bat1', pinyin: 'bu4', meaning: 'not; no', examples: ['不是', '不好', '不用'] },
+  在: { jyutping: 'zoi6', pinyin: 'zai4', meaning: 'at; in; to be located', examples: ['在家', '現在', '在校'] },
+  有: { jyutping: 'jau5', pinyin: 'you3', meaning: 'to have; there is', examples: ['有人', '有用', '沒有'] },
+  和: { jyutping: 'wo4', pinyin: 'he2', meaning: 'and; harmony', examples: ['我和你', '和平', '和好'] },
+  人: { jyutping: 'jan4', pinyin: 'ren2', meaning: 'person; people', examples: ['大人', '小人', '中國人'] },
+  中: { jyutping: 'zung1', pinyin: 'zhong1', meaning: 'middle; China; Chinese', examples: ['中文', '中國', '中間'] },
+  大: { jyutping: 'daai6', pinyin: 'da4', meaning: 'big; great', examples: ['大人', '大學', '大山'] },
+  小: { jyutping: 'siu2', pinyin: 'xiao3', meaning: 'small; young', examples: ['小學', '小心', '小朋友'] },
+  上: { jyutping: 'soeng6', pinyin: 'shang4', meaning: 'up; above; previous', examples: ['上學', '上面', '上午'] },
+  下: { jyutping: 'haa6', pinyin: 'xia4', meaning: 'down; below; next', examples: ['下學', '下面', '下午'] },
+  日: { jyutping: 'jat6', pinyin: 'ri4', meaning: 'sun; day', examples: ['生日', '日子', '明日'] },
+  月: { jyutping: 'jyut6', pinyin: 'yue4', meaning: 'moon; month', examples: ['月亮', '一月', '年月'] },
+  水: { jyutping: 'seoi2', pinyin: 'shui3', meaning: 'water', examples: ['喝水', '水果', '水火'] },
+  火: { jyutping: 'fo2', pinyin: 'huo3', meaning: 'fire', examples: ['火山', '火車', '水火'] },
+  木: { jyutping: 'muk6', pinyin: 'mu4', meaning: 'wood; tree', examples: ['木頭', '木馬', '樹木'] },
+  山: { jyutping: 'saan1', pinyin: 'shan1', meaning: 'mountain', examples: ['火山', '山上', '大山'] },
+  田: { jyutping: 'tin4', pinyin: 'tian2', meaning: 'field; farmland', examples: ['田地', '水田', '田園'] },
+  口: { jyutping: 'hau2', pinyin: 'kou3', meaning: 'mouth; opening', examples: ['入口', '出口', '人口'] },
+  手: { jyutping: 'sau2', pinyin: 'shou3', meaning: 'hand', examples: ['手指', '手機', '小手'] },
+  心: { jyutping: 'sam1', pinyin: 'xin1', meaning: 'heart; mind', examples: ['小心', '開心', '中心'] },
+  子: { jyutping: 'zi2', pinyin: 'zi3', meaning: 'child; son; suffix', examples: ['日子', '兒子', '孩子'] },
+  女: { jyutping: 'neoi5', pinyin: 'nu3', meaning: 'female; woman', examples: ['女人', '女子', '女兒'] },
+  天: { jyutping: 'tin1', pinyin: 'tian1', meaning: 'sky; day', examples: ['今天', '天空', '天氣'] },
+  好: { jyutping: 'hou2', pinyin: 'hao3', meaning: 'good; well', examples: ['你好', '好人', '好學'] },
+  早: { jyutping: 'zou2', pinyin: 'zao3', meaning: 'early; morning', examples: ['早晨', '早上', '早日'] },
+  晚: { jyutping: 'maan5', pinyin: 'wan3', meaning: 'late; evening', examples: ['晚上', '晚安', '今晚'] },
+  學: { jyutping: 'hok6', pinyin: 'xue2', meaning: 'to learn; study; school', examples: ['學校', '學生', '學中文'] },
+  校: { jyutping: 'haau6', pinyin: 'xiao4', meaning: 'school', examples: ['學校', '校長', '小學'] },
+  書: { jyutping: 'syu1', pinyin: 'shu1', meaning: 'book; letter; writing', examples: ['書本', '看書', '中文書'] },
+  字: { jyutping: 'zi6', pinyin: 'zi4', meaning: 'character; word', examples: ['中文字', '寫字', '字典'] },
+  文: { jyutping: 'man4', pinyin: 'wen2', meaning: 'language; writing; culture', examples: ['中文', '英文', '文字'] },
+  看: { jyutping: 'hon3', pinyin: 'kan4', meaning: 'to look; to read', examples: ['看書', '看見', '看看'] },
+  聽: { jyutping: 'ting1', pinyin: 'ting1', meaning: 'to listen; to hear', examples: ['聽書', '聽見', '聽說'] },
+  說: { jyutping: 'syut3', pinyin: 'shuo1', meaning: 'to speak; to say', examples: ['說話', '聽說', '說中文'] },
+  讀: { jyutping: 'duk6', pinyin: 'du2', meaning: 'to read; to study', examples: ['讀書', '讀音', '讀中文'] },
+  寫: { jyutping: 'se2', pinyin: 'xie3', meaning: 'to write', examples: ['寫字', '寫書', '手寫'] },
+  吃: { jyutping: 'hek3', pinyin: 'chi1', meaning: 'to eat', examples: ['吃飯', '好吃', '吃水果'] },
+  喝: { jyutping: 'hot3', pinyin: 'he1', meaning: 'to drink', examples: ['喝水', '喝茶', '喝湯'] },
+  來: { jyutping: 'loi4', pinyin: 'lai2', meaning: 'to come', examples: ['回來', '來看', '來日'] },
+  去: { jyutping: 'heoi3', pinyin: 'qu4', meaning: 'to go', examples: ['去學校', '出去', '去看'] },
+}
+
+function getDictionaryLinks(character: string) {
+  const encodedCharacter = encodeURIComponent(character)
+  return {
+    mdbg: `https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=${encodedCharacter}`,
+    wiktionary: `https://en.wiktionary.org/wiki/${encodedCharacter}`,
+  }
+}
+
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
   const strokePaths = Array.from(
     host.querySelectorAll<SVGPathElement>('svg g path[clip-path][stroke]'),
@@ -347,6 +425,7 @@ function App() {
   const [strokeFilter, setStrokeFilter] = useState(radicalGroups[3].strokes)
   const [selectedCharacter, setSelectedCharacter] = useState('木')
   const [wordInput, setWordInput] = useState('')
+  const [dictionaryInput, setDictionaryInput] = useState('')
   const [customCharacters, setCustomCharacters] = useState<string[]>(loadCachedCustomCharacters)
   const [mode, setMode] = useState<'trace' | 'animate'>('trace')
   const [status, setStatus] = useState('跟着灰色筆劃，用手指或滑鼠描一描。')
@@ -365,6 +444,9 @@ function App() {
     () => [...radicalGroups.flatMap((group) => group.characters), ...commonCharacters, ...customCharacters],
     [customCharacters],
   )
+
+  const dictionaryEntry = dictionaryEntries[selectedCharacter]
+  const dictionaryLinks = getDictionaryLinks(selectedCharacter)
 
   useEffect(() => {
     const host = writerHostRef.current
@@ -513,6 +595,21 @@ function App() {
     setSelectedCharacter('木')
     setStrokeFilter(4)
     setStatus('已清除自訂練習字。')
+  }
+
+  function lookupDictionaryCharacter() {
+    const character = Array.from(dictionaryInput).find((inputCharacter) => (
+      /\p{Script=Han}/u.test(inputCharacter)
+    ))
+
+    if (!character) {
+      setStatus('請輸入一個中文字來查字典。')
+      return
+    }
+
+    setSelectedCharacter(character)
+    setDictionaryInput('')
+    setStatus(dictionaryEntries[character] ? '已打開字典資料。' : '可用外部字典查更多資料。')
   }
 
   return (
@@ -666,6 +763,69 @@ function App() {
             <Sparkles size={20} />
             <p>{status}</p>
           </div>
+          <section className="dictionary-card" aria-label="Dictionary">
+            <div className="dictionary-heading">
+              <BookOpen size={19} />
+              <span>字典</span>
+              <strong>{selectedCharacter}</strong>
+            </div>
+            <form
+              className="dictionary-search"
+              onSubmit={(event) => {
+                event.preventDefault()
+                lookupDictionaryCharacter()
+              }}
+            >
+              <input
+                aria-label="Dictionary lookup"
+                maxLength={12}
+                placeholder="查字，例如：愛"
+                value={dictionaryInput}
+                onChange={(event) => setDictionaryInput(event.target.value)}
+              />
+              <button type="submit" aria-label="Search dictionary">
+                <Search size={17} />
+              </button>
+            </form>
+            {dictionaryEntry ? (
+              <div className="dictionary-body">
+                <div className="pronunciation-grid">
+                  <div>
+                    <span>粵拼</span>
+                    <strong>{dictionaryEntry.jyutping}</strong>
+                  </div>
+                  <div>
+                    <span>拼音</span>
+                    <strong>{dictionaryEntry.pinyin}</strong>
+                  </div>
+                </div>
+                <p>{dictionaryEntry.meaning}</p>
+                <div className="example-list">
+                  {dictionaryEntry.examples.map((example) => (
+                    <button
+                      type="button"
+                      key={example}
+                      onClick={() => setSelectedCharacter(Array.from(example)[0])}
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="dictionary-empty">暫時未有本機解釋，可用外部字典查更多。</p>
+            )}
+            <div className="dictionary-links">
+              <a href={dictionaryLinks.mdbg} target="_blank" rel="noreferrer">
+                MDBG
+                <ExternalLink size={14} />
+              </a>
+              <a href={dictionaryLinks.wiktionary} target="_blank" rel="noreferrer">
+                Wiktionary
+                <ExternalLink size={14} />
+              </a>
+            </div>
+          </section>
           <div className="stat-row">
             <span>完成筆數</span>
             <strong>{completed}</strong>

@@ -333,6 +333,7 @@ button.active,
 }
 
 .status-card,
+.dictionary-card,
 .done-note {
   background: #f7faf8;
   border: 1px solid #dce4e0;
@@ -356,6 +357,144 @@ button.active,
   font-weight: 750;
   line-height: 1.45;
   margin: 0;
+}
+
+.dictionary-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.dictionary-heading {
+  align-items: center;
+  color: #24302c;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto 1fr auto;
+}
+
+.dictionary-heading svg {
+  color: #0f8c86;
+}
+
+.dictionary-heading span {
+  color: #6b766f;
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
+.dictionary-heading strong {
+  color: #18211f;
+  font-family: 'PingFang TC', 'Noto Serif TC', 'Songti TC', serif;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.dictionary-search {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 42px;
+}
+
+.dictionary-search input {
+  background: #ffffff;
+  border: 1px solid #dce4e0;
+  border-radius: 8px;
+  color: #18211f;
+  font: 800 0.94rem/1 system-ui, -apple-system, BlinkMacSystemFont, 'Noto Sans TC', sans-serif;
+  min-height: 40px;
+  min-width: 0;
+  outline: none;
+  padding: 0 11px;
+}
+
+.dictionary-search input:focus {
+  border-color: #0f8c86;
+  box-shadow: 0 0 0 3px rgba(15, 140, 134, 0.13);
+}
+
+.dictionary-search button {
+  min-height: 40px;
+  padding: 0;
+}
+
+.dictionary-body {
+  display: grid;
+  gap: 12px;
+}
+
+.pronunciation-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pronunciation-grid div {
+  background: #ffffff;
+  border: 1px solid #dce4e0;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 9px;
+}
+
+.pronunciation-grid span {
+  color: #6b766f;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.pronunciation-grid strong {
+  color: #0f8c86;
+  font-size: 0.98rem;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.dictionary-body p,
+.dictionary-empty {
+  color: #24302c;
+  font-size: 0.96rem;
+  font-weight: 750;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.example-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.example-list button {
+  background: #ffffff;
+  color: #24302c;
+  font-family: 'PingFang TC', 'Noto Serif TC', 'Songti TC', serif;
+  font-size: 1rem;
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.dictionary-links {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.dictionary-links a {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dce4e0;
+  border-radius: 8px;
+  color: #27615f;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  gap: 6px;
+  justify-content: center;
+  min-height: 36px;
+  text-decoration: none;
 }
 
 .stat-row {
@@ -408,6 +547,7 @@ button.active,
   }
 
   .status-card,
+  .dictionary-card,
   .done-note {
     grid-column: 1 / -1;
   }
