@@ -380,6 +380,66 @@ const dictionaryEntries: Record<string, DictionaryEntry> = {
   去: { jyutping: 'heoi3', pinyin: 'qu4', meaning: 'to go', examples: ['去學校', '出去', '去看'] },
 }
 
+const dictionaryChineseMeanings: Record<string, string> = {
+  一: '數字一；第一',
+  二: '數字二',
+  三: '數字三',
+  四: '數字四',
+  五: '數字五',
+  六: '數字六',
+  七: '數字七',
+  八: '數字八',
+  九: '數字九',
+  十: '數字十',
+  我: '自己；說話的人',
+  你: '對方；聽話的人',
+  他: '男性第三人稱',
+  她: '女性第三人稱',
+  們: '表示多於一個人的後綴',
+  的: '表示所屬或修飾關係',
+  是: '表示肯定或判斷',
+  不: '表示否定',
+  在: '表示位置、存在或正在進行',
+  有: '擁有；存在',
+  和: '連接詞；和諧',
+  人: '人；人類',
+  中: '中間；中國；中文',
+  大: '體積、程度或年紀較大',
+  小: '體積、程度或年紀較小',
+  上: '上面；向上；前一個',
+  下: '下面；向下；下一個',
+  日: '太陽；一天；日子',
+  月: '月亮；月份',
+  水: '水；液體',
+  火: '火；燃燒的現象',
+  木: '木頭；樹木',
+  山: '山；高起的地形',
+  田: '田地；農田',
+  口: '嘴巴；出入口',
+  手: '手；用手做事',
+  心: '心；思想或感情',
+  子: '孩子；兒子；詞尾',
+  女: '女性；女子',
+  天: '天空；一天；自然',
+  好: '良好；喜歡；可以',
+  早: '時間較前；早上',
+  晚: '時間較後；晚上',
+  學: '學習；求知；學校',
+  校: '學校；校園',
+  書: '書本；文字記錄',
+  字: '文字；字詞',
+  文: '文字；語文；文化',
+  看: '用眼睛觀看；閱讀',
+  聽: '用耳朵接收聲音',
+  說: '講話；表達',
+  讀: '閱讀；朗讀；學習',
+  寫: '書寫；寫下',
+  吃: '進食',
+  喝: '飲用',
+  來: '到這裡；來到',
+  去: '離開；前往',
+}
+
 function getDictionaryLinks(character: string) {
   const encodedCharacter = encodeURIComponent(character)
   return {
@@ -446,6 +506,7 @@ function App() {
   )
 
   const dictionaryEntry = dictionaryEntries[selectedCharacter]
+  const dictionaryChineseMeaning = dictionaryChineseMeanings[selectedCharacter]
   const dictionaryLinks = getDictionaryLinks(selectedCharacter)
 
   useEffect(() => {
@@ -799,7 +860,16 @@ function App() {
                     <strong>{dictionaryEntry.pinyin}</strong>
                   </div>
                 </div>
-                <p>{dictionaryEntry.meaning}</p>
+                <div className="meaning-list">
+                  <div>
+                    <span>中文</span>
+                    <p>{dictionaryChineseMeaning}</p>
+                  </div>
+                  <div>
+                    <span>English</span>
+                    <p>{dictionaryEntry.meaning}</p>
+                  </div>
+                </div>
                 <div className="example-list">
                   {dictionaryEntry.examples.map((example) => (
                     <button

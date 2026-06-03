@@ -461,6 +461,26 @@ button.active,
   margin: 0;
 }
 
+.meaning-list {
+  display: grid;
+  gap: 8px;
+}
+
+.meaning-list div {
+  background: #ffffff;
+  border: 1px solid #dce4e0;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.meaning-list span {
+  color: #6b766f;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
 .example-list {
   display: flex;
   flex-wrap: wrap;
