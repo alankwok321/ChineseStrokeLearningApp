@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import {
   Brush,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Eraser,
@@ -488,8 +487,8 @@ function App() {
   const [customCharacters, setCustomCharacters] = useState<string[]>(loadCachedCustomCharacters)
   const [mode, setMode] = useState<'trace' | 'animate'>('trace')
   const [status, setStatus] = useState('跟着灰色筆劃，用手指或滑鼠描一描。')
-  const [completed, setCompleted] = useState(0)
-  const [mistakes, setMistakes] = useState(0)
+  const [, setCompleted] = useState(0)
+  const [, setMistakes] = useState(0)
   const [resetCount, setResetCount] = useState(0)
   const writerRef = useRef<HanziWriter | null>(null)
   const writerHostRef = useRef<HTMLDivElement | null>(null)
@@ -894,18 +893,6 @@ function App() {
               </a>
             </div>
           </section>
-          <div className="stat-row">
-            <span>完成筆數</span>
-            <strong>{completed}</strong>
-          </div>
-          <div className="stat-row">
-            <span>修正次數</span>
-            <strong>{mistakes}</strong>
-          </div>
-          <div className="done-note">
-            <CheckCircle2 size={18} />
-            <span>手機和平板可直接用手指描寫。</span>
-          </div>
         </aside>
       </section>
     </main>
