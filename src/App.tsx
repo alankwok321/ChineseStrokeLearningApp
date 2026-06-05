@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import HanziWriter from 'hanzi-writer'
 import {
   Brush,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Eraser,
@@ -10,6 +11,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Volume2,
   Sparkles,
   Trash2,
 } from 'lucide-react'
@@ -442,8 +444,12 @@ function getDictionaryLinks(character: string) {
   const encodedCharacter = encodeURIComponent(character)
   return {
     edb: `https://www.edbchinese.hk/lexlist_en/index.jsp#${encodedCharacter}`,
-    cuhk: 'https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/',
+    cuhk: 'https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/search.php',
   }
+}
+
+function getCuhkSoundUrl(jyutping: string) {
+  return `https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound/${encodeURIComponent(jyutping)}.wav`
 }
 
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
@@ -487,11 +493,12 @@ function App() {
   const [customCharacters, setCustomCharacters] = useState<string[]>(loadCachedCustomCharacters)
   const [mode, setMode] = useState<'trace' | 'animate'>('trace')
   const [status, setStatus] = useState('跟着灰色筆劃，用手指或滑鼠描一描。')
-  const [, setCompleted] = useState(0)
-  const [, setMistakes] = useState(0)
+  const [completed, setCompleted] = useState(0)
+  const [mistakes, setMistakes] = useState(0)
   const [resetCount, setResetCount] = useState(0)
   const writerRef = useRef<HanziWriter | null>(null)
   const writerHostRef = useRef<HTMLDivElement | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const selectedGroup = useMemo(
     () => radicalGroups.find((group) => group.strokes === strokeFilter) ?? radicalGroups[0],
@@ -671,8 +678,18 @@ function App() {
     setStatus(dictionaryEntries[character] ? '已打開字典資料。' : '可用外部字典查更多資料。')
   }
 
+  function playPronunciation() {
+    if (!dictionaryEntry || !audioRef.current) return
+
+    audioRef.current.src = getCuhkSoundUrl(dictionaryEntry.jyutping)
+    audioRef.current.play().catch(() => {
+      setStatus('未能播放讀音，請用 CUHK 粵音韻彙查聽。')
+    })
+  }
+
   return (
     <main className="app-shell">
+      <audio ref={audioRef} preload="none" />
       <header className="topbar">
         <div>
           <h1>筆劃練習</h1>
@@ -851,7 +868,12 @@ function App() {
                 <div className="pronunciation-grid">
                   <div>
                     <span>粵語拼音</span>
-                    <strong>{dictionaryEntry.jyutping}</strong>
+                    <span className="pronunciation-value">
+                      <strong>{dictionaryEntry.jyutping}</strong>
+                      <button type="button" onClick={playPronunciation} aria-label={`Play ${selectedCharacter} pronunciation`}>
+                        <Volume2 size={16} />
+                      </button>
+                    </span>
                   </div>
                   <div>
                     <span>漢語拼音</span>
@@ -893,6 +915,18 @@ function App() {
               </a>
             </div>
           </section>
+          <div className="stat-row">
+            <span>完成筆數</span>
+            <strong>{completed}</strong>
+          </div>
+          <div className="stat-row">
+            <span>修正次數</span>
+            <strong>{mistakes}</strong>
+          </div>
+          <div className="done-note">
+            <CheckCircle2 size={18} />
+            <span>手機和平板可直接用手指描寫。</span>
+          </div>
         </aside>
       </section>
     </main>
