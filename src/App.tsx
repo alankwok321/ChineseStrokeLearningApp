@@ -30,7 +30,8 @@ type DictionaryEntry = {
   examples: string[]
 }
 
-type DictionaryProvider = 'both' | 'mdbg' | 'wiktionary'
+type DictionaryProvider = 'all' | 'yellowbridge' | 'hkdictionary' | 'wiktionary'
+type DictionaryLinkProvider = Exclude<DictionaryProvider, 'all'>
 type SidePanelTab = 'dictionary' | 'settings'
 
 const radicalGroups: RadicalGroup[] = [
@@ -258,19 +259,24 @@ const dictionaryProviderOptions: Array<{
   description: string
 }> = [
   {
-    value: 'both',
+    value: 'all',
     label: '全部',
-    description: '顯示 MDBG 和 Wiktionary 兩個外部字典。',
+    description: '顯示 YellowBridge、HKDictionary 和 Wiktionary。',
   },
   {
-    value: 'mdbg',
-    label: 'MDBG',
-    description: '適合查詞、拼音和英文解釋。',
+    value: 'yellowbridge',
+    label: 'YellowBridge',
+    description: '知名中文學習字典，適合查字、詞、部件和筆順。',
+  },
+  {
+    value: 'hkdictionary',
+    label: 'HKDictionary',
+    description: '香港粵語字典，適合查粵拼、例句和廣東話用法。',
   },
   {
     value: 'wiktionary',
     label: 'Wiktionary',
-    description: '適合查字源、讀音和多語言資料。',
+    description: '大型開放字典，適合查讀音、字源和多語言資料。',
   },
 ]
 
@@ -470,7 +476,8 @@ const dictionaryChineseMeanings: Record<string, string> = {
 function getDictionaryLinks(character: string) {
   const encodedCharacter = encodeURIComponent(character)
   return {
-    mdbg: `https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=${encodedCharacter}`,
+    yellowbridge: `https://www.yellowbridge.com/chinese/dictionary.php?word=${encodedCharacter}`,
+    hkdictionary: `https://www.hkdictionary.com/words/${encodedCharacter}`,
     wiktionary: `https://en.wiktionary.org/wiki/${encodedCharacter}`,
   }
 }
@@ -478,12 +485,18 @@ function getDictionaryLinks(character: string) {
 function loadDictionaryProvider(): DictionaryProvider {
   try {
     const cached = window.localStorage.getItem(dictionaryProviderStorageKey)
-    if (cached === 'both' || cached === 'mdbg' || cached === 'wiktionary') return cached
+    if (
+      cached === 'all' ||
+      cached === 'yellowbridge' ||
+      cached === 'hkdictionary' ||
+      cached === 'wiktionary'
+    ) return cached
+    if (cached === 'both' || cached === 'mdbg') return 'all'
   } catch {
-    return 'both'
+    return 'all'
   }
 
-  return 'both'
+  return 'all'
 }
 
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
@@ -549,13 +562,12 @@ function App() {
   const dictionaryChineseMeaning = dictionaryChineseMeanings[selectedCharacter]
   const dictionaryLinks = getDictionaryLinks(selectedCharacter)
   const visibleDictionaryLinks = dictionaryProviderOptions
-    .filter((option) => (
-      option.value !== 'both' &&
-      (dictionaryProvider === 'both' || dictionaryProvider === option.value)
+    .filter((option): option is typeof option & { value: DictionaryLinkProvider } => (
+      option.value !== 'all' && (dictionaryProvider === 'all' || dictionaryProvider === option.value)
     ))
     .map((option) => ({
       ...option,
-      href: option.value === 'mdbg' ? dictionaryLinks.mdbg : dictionaryLinks.wiktionary,
+      href: dictionaryLinks[option.value],
     }))
 
   useEffect(() => {
