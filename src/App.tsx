@@ -6,13 +6,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Eraser,
-  ExternalLink,
   BookOpen,
   Play,
   Plus,
   RotateCcw,
   Search,
-  Settings,
   Sparkles,
   Trash2,
 } from 'lucide-react'
@@ -29,10 +27,6 @@ type DictionaryEntry = {
   meaning: string
   examples: string[]
 }
-
-type DictionaryProvider = 'all' | 'yellowbridge' | 'hkdictionary' | 'wiktionary'
-type DictionaryLinkProvider = Exclude<DictionaryProvider, 'all'>
-type SidePanelTab = 'dictionary' | 'settings'
 
 const radicalGroups: RadicalGroup[] = [
   { strokes: 1, characters: ['一', '丨', '丶', '丿', '乙', '亅'] },
@@ -251,34 +245,6 @@ const radicalGroups: RadicalGroup[] = [
 ]
 
 const customStorageKey = 'stroke-practice-custom-characters'
-const dictionaryProviderStorageKey = 'stroke-practice-dictionary-provider'
-
-const dictionaryProviderOptions: Array<{
-  value: DictionaryProvider
-  label: string
-  description: string
-}> = [
-  {
-    value: 'all',
-    label: '全部',
-    description: '顯示 YellowBridge、HKDictionary 和 Wiktionary。',
-  },
-  {
-    value: 'yellowbridge',
-    label: 'YellowBridge',
-    description: '知名中文學習字典，適合查字、詞、部件和筆順。',
-  },
-  {
-    value: 'hkdictionary',
-    label: 'HKDictionary',
-    description: '香港粵語字典，適合查粵拼、例句和廣東話用法。',
-  },
-  {
-    value: 'wiktionary',
-    label: 'Wiktionary',
-    description: '大型開放字典，適合查讀音、字源和多語言資料。',
-  },
-]
 
 const commonCharacters = [
   '我',
@@ -476,27 +442,9 @@ const dictionaryChineseMeanings: Record<string, string> = {
 function getDictionaryLinks(character: string) {
   const encodedCharacter = encodeURIComponent(character)
   return {
-    yellowbridge: `https://www.yellowbridge.com/chinese/dictionary.php?word=${encodedCharacter}`,
-    hkdictionary: `https://www.hkdictionary.com/words/${encodedCharacter}`,
-    wiktionary: `https://en.wiktionary.org/wiki/${encodedCharacter}`,
+    edb: `https://www.edbchinese.hk/lexlist_en/index.jsp#${encodedCharacter}`,
+    cuhk: 'https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/',
   }
-}
-
-function loadDictionaryProvider(): DictionaryProvider {
-  try {
-    const cached = window.localStorage.getItem(dictionaryProviderStorageKey)
-    if (
-      cached === 'all' ||
-      cached === 'yellowbridge' ||
-      cached === 'hkdictionary' ||
-      cached === 'wiktionary'
-    ) return cached
-    if (cached === 'both' || cached === 'mdbg') return 'all'
-  } catch {
-    return 'all'
-  }
-
-  return 'all'
 }
 
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
@@ -537,8 +485,6 @@ function App() {
   const [selectedCharacter, setSelectedCharacter] = useState('木')
   const [wordInput, setWordInput] = useState('')
   const [dictionaryInput, setDictionaryInput] = useState('')
-  const [sidePanelTab, setSidePanelTab] = useState<SidePanelTab>('dictionary')
-  const [dictionaryProvider, setDictionaryProvider] = useState<DictionaryProvider>(loadDictionaryProvider)
   const [customCharacters, setCustomCharacters] = useState<string[]>(loadCachedCustomCharacters)
   const [mode, setMode] = useState<'trace' | 'animate'>('trace')
   const [status, setStatus] = useState('跟着灰色筆劃，用手指或滑鼠描一描。')
@@ -561,14 +507,6 @@ function App() {
   const dictionaryEntry = dictionaryEntries[selectedCharacter]
   const dictionaryChineseMeaning = dictionaryChineseMeanings[selectedCharacter]
   const dictionaryLinks = getDictionaryLinks(selectedCharacter)
-  const visibleDictionaryLinks = dictionaryProviderOptions
-    .filter((option): option is typeof option & { value: DictionaryLinkProvider } => (
-      option.value !== 'all' && (dictionaryProvider === 'all' || dictionaryProvider === option.value)
-    ))
-    .map((option) => ({
-      ...option,
-      href: dictionaryLinks[option.value],
-    }))
 
   useEffect(() => {
     const host = writerHostRef.current
@@ -646,10 +584,6 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(customStorageKey, JSON.stringify(customCharacters))
   }, [customCharacters])
-
-  useEffect(() => {
-    window.localStorage.setItem(dictionaryProviderStorageKey, dictionaryProvider)
-  }, [dictionaryProvider])
 
   function startQuiz() {
     setMode('trace')
@@ -735,7 +669,6 @@ function App() {
 
     setSelectedCharacter(character)
     setDictionaryInput('')
-    setSidePanelTab('dictionary')
     setStatus(dictionaryEntries[character] ? '已打開字典資料。' : '可用外部字典查更多資料。')
   }
 
@@ -891,126 +824,75 @@ function App() {
             <p>{status}</p>
           </div>
           <section className="dictionary-card" aria-label="Dictionary">
-            <div className="side-tabs" role="tablist" aria-label="Dictionary and settings">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={sidePanelTab === 'dictionary'}
-                className={sidePanelTab === 'dictionary' ? 'active' : ''}
-                onClick={() => setSidePanelTab('dictionary')}
-              >
-                <BookOpen size={17} />
-                字典
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={sidePanelTab === 'settings'}
-                className={sidePanelTab === 'settings' ? 'active' : ''}
-                onClick={() => setSidePanelTab('settings')}
-              >
-                <Settings size={17} />
-                設定
-              </button>
+            <div className="dictionary-heading">
+              <BookOpen size={19} />
+              <span>字典</span>
+              <strong>{selectedCharacter}</strong>
             </div>
-
-            {sidePanelTab === 'dictionary' ? (
-              <>
-                <div className="dictionary-heading">
-                  <BookOpen size={19} />
-                  <span>字典</span>
-                  <strong>{selectedCharacter}</strong>
-                </div>
-                <form
-                  className="dictionary-search"
-                  onSubmit={(event) => {
-                    event.preventDefault()
-                    lookupDictionaryCharacter()
-                  }}
-                >
-                  <input
-                    aria-label="Dictionary lookup"
-                    maxLength={12}
-                    placeholder="查字，例如：愛"
-                    value={dictionaryInput}
-                    onChange={(event) => setDictionaryInput(event.target.value)}
-                  />
-                  <button type="submit" aria-label="Search dictionary">
-                    <Search size={17} />
-                  </button>
-                </form>
-                {dictionaryEntry ? (
-                  <div className="dictionary-body">
-                    <div className="pronunciation-grid">
-                      <div>
-                        <span>粵拼</span>
-                        <strong>{dictionaryEntry.jyutping}</strong>
-                      </div>
-                      <div>
-                        <span>拼音</span>
-                        <strong>{dictionaryEntry.pinyin}</strong>
-                      </div>
-                    </div>
-                    <div className="meaning-list">
-                      <div>
-                        <span>中文</span>
-                        <p>{dictionaryChineseMeaning}</p>
-                      </div>
-                      <div>
-                        <span>English</span>
-                        <p>{dictionaryEntry.meaning}</p>
-                      </div>
-                    </div>
-                    <div className="example-list">
-                      {dictionaryEntry.examples.map((example) => (
-                        <button
-                          type="button"
-                          key={example}
-                          onClick={() => setSelectedCharacter(Array.from(example)[0])}
-                        >
-                          {example}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="dictionary-empty">暫時未有本機解釋，可用外部字典查更多。</p>
-                )}
-                <div className="dictionary-links">
-                  {visibleDictionaryLinks.map((link) => (
-                    <a href={link.href} target="_blank" rel="noreferrer" key={link.value}>
-                      {link.label}
-                      <ExternalLink size={14} />
-                    </a>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="settings-panel">
-                <div className="settings-heading">
-                  <Settings size={19} />
+            <form
+              className="dictionary-search"
+              onSubmit={(event) => {
+                event.preventDefault()
+                lookupDictionaryCharacter()
+              }}
+            >
+              <input
+                aria-label="Dictionary lookup"
+                maxLength={12}
+                placeholder="查字，例如：愛"
+                value={dictionaryInput}
+                onChange={(event) => setDictionaryInput(event.target.value)}
+              />
+              <button type="submit" aria-label="Search dictionary">
+                <Search size={17} />
+              </button>
+            </form>
+            {dictionaryEntry ? (
+              <div className="dictionary-body">
+                <div className="pronunciation-grid">
                   <div>
-                    <span>字典設定</span>
-                    <strong>外部字典</strong>
+                    <span>粵語拼音</span>
+                    <strong>{dictionaryEntry.jyutping}</strong>
+                  </div>
+                  <div>
+                    <span>漢語拼音</span>
+                    <strong>{dictionaryEntry.pinyin}</strong>
                   </div>
                 </div>
-                <div className="dictionary-choice-list" role="radiogroup" aria-label="Choose dictionary">
-                  {dictionaryProviderOptions.map((option) => (
+                <p className="pronunciation-note">粵語拼音以香港語言學學會方案標示，請以 CUHK 粵音韻彙核對完整讀音。</p>
+                <div className="meaning-list">
+                  <div>
+                    <span>中文</span>
+                    <p>{dictionaryChineseMeaning}</p>
+                  </div>
+                  <div>
+                    <span>English</span>
+                    <p>{dictionaryEntry.meaning}</p>
+                  </div>
+                </div>
+                <div className="example-list">
+                  {dictionaryEntry.examples.map((example) => (
                     <button
                       type="button"
-                      role="radio"
-                      aria-checked={dictionaryProvider === option.value}
-                      className={dictionaryProvider === option.value ? 'active' : ''}
-                      key={option.value}
-                      onClick={() => setDictionaryProvider(option.value)}
+                      key={example}
+                      onClick={() => setSelectedCharacter(Array.from(example)[0])}
                     >
-                      <span>{option.label}</span>
-                      <small>{option.description}</small>
+                      {example}
                     </button>
                   ))}
                 </div>
               </div>
+            ) : (
+              <p className="dictionary-empty">暫時未有本機解釋，請用 EDB 詞彙表或 CUHK 粵音韻彙查更多。</p>
             )}
+            <div className="dictionary-links">
+              <a href={dictionaryLinks.edb} target="_blank" rel="noreferrer">
+                EDB 詞彙表
+              </a>
+              <a href={dictionaryLinks.cuhk} target="_blank" rel="noreferrer">
+                CUHK 粵音韻彙
+              </a>
+            </div>
           </section>
           <div className="stat-row">
             <span>完成筆數</span>
