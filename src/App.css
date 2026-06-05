@@ -365,6 +365,26 @@ button.active,
   padding: 14px;
 }
 
+.side-tabs {
+  background: #ffffff;
+  border: 1px solid #dce4e0;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+}
+
+.side-tabs button {
+  border-color: transparent;
+  min-height: 36px;
+}
+
+.side-tabs button.active {
+  background: #0f8c86;
+  color: #ffffff;
+}
+
 .dictionary-heading {
   align-items: center;
   color: #24302c;
@@ -499,7 +519,7 @@ button.active,
 .dictionary-links {
   display: grid;
   gap: 8px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
 }
 
 .dictionary-links a {
@@ -515,6 +535,71 @@ button.active,
   justify-content: center;
   min-height: 36px;
   text-decoration: none;
+}
+
+.settings-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-heading {
+  align-items: center;
+  color: #24302c;
+  display: flex;
+  gap: 10px;
+}
+
+.settings-heading svg {
+  color: #0f8c86;
+  flex: 0 0 auto;
+}
+
+.settings-heading span {
+  color: #6b766f;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.settings-heading strong {
+  color: #18211f;
+  display: block;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.dictionary-choice-list {
+  display: grid;
+  gap: 8px;
+}
+
+.dictionary-choice-list button {
+  align-items: flex-start;
+  background: #ffffff;
+  display: grid;
+  gap: 6px;
+  justify-content: stretch;
+  min-height: 0;
+  padding: 11px;
+  text-align: left;
+}
+
+.dictionary-choice-list button.active {
+  background: #e7f5f4;
+  border-color: #0f8c86;
+  color: #24302c;
+}
+
+.dictionary-choice-list span {
+  font-size: 0.94rem;
+  font-weight: 850;
+}
+
+.dictionary-choice-list small {
+  color: #5e6b66;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .stat-row {
