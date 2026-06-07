@@ -468,15 +468,6 @@ button.active,
   width: 30px;
 }
 
-.pronunciation-value a {
-  color: #27615f;
-  flex: 0 0 auto;
-  font-size: 0.74rem;
-  font-weight: 850;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
 .dictionary-body p,
 .dictionary-empty {
   color: #24302c;

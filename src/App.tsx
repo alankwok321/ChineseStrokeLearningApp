@@ -452,10 +452,6 @@ function getCuhkSoundUrl(jyutping: string) {
   return `/api/cuhk-sound?s=${encodeURIComponent(jyutping)}`
 }
 
-function getCuhkSoundPageUrl(jyutping: string) {
-  return `https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound.php?s=${encodeURIComponent(jyutping)}`
-}
-
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
   const strokePaths = Array.from(
     host.querySelectorAll<SVGPathElement>('svg g path[clip-path][stroke]'),
@@ -728,7 +724,7 @@ function App() {
     audioRef.current.src = pronunciationAudio.url
     audioRef.current.currentTime = 0
     audioRef.current.play().catch(() => {
-      setStatus('未能播放讀音，請按 CUHK 聽讀音。')
+      setStatus('未能播放讀音，請稍後再試。')
     })
   }
 
@@ -918,9 +914,6 @@ function App() {
                       <button type="button" onClick={playPronunciation} aria-label={`Play ${selectedCharacter} pronunciation`}>
                         <Volume2 size={16} />
                       </button>
-                      <a href={getCuhkSoundPageUrl(dictionaryEntry.jyutping)} target="_blank" rel="noreferrer">
-                        CUHK 聽
-                      </a>
                     </span>
                   </div>
                   <div>
