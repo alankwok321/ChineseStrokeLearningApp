@@ -449,7 +449,11 @@ function getDictionaryLinks(character: string) {
 }
 
 function getCuhkSoundUrl(jyutping: string) {
-  return `https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound/${encodeURIComponent(jyutping)}.wav`
+  return `/api/cuhk-sound?s=${encodeURIComponent(jyutping)}`
+}
+
+function getCuhkSoundPageUrl(jyutping: string) {
+  return `https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/sound.php?s=${encodeURIComponent(jyutping)}`
 }
 
 function colorizeStrokePaths(host: HTMLDivElement, strokeCount: number) {
@@ -496,6 +500,7 @@ function App() {
   const [completed, setCompleted] = useState(0)
   const [mistakes, setMistakes] = useState(0)
   const [resetCount, setResetCount] = useState(0)
+  const [pronunciationAudio, setPronunciationAudio] = useState<{ jyutping: string; url: string } | null>(null)
   const writerRef = useRef<HanziWriter | null>(null)
   const writerHostRef = useRef<HTMLDivElement | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -513,6 +518,40 @@ function App() {
   const dictionaryEntry = dictionaryEntries[selectedCharacter]
   const dictionaryChineseMeaning = dictionaryChineseMeanings[selectedCharacter]
   const dictionaryLinks = getDictionaryLinks(selectedCharacter)
+
+  useEffect(() => {
+    if (!dictionaryEntry) {
+      return
+    }
+
+    const controller = new AbortController()
+    let objectUrl = ''
+    const jyutping = dictionaryEntry.jyutping
+
+    fetch(getCuhkSoundUrl(jyutping), { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Pronunciation audio unavailable')
+        }
+        return response.blob()
+      })
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob)
+        setPronunciationAudio({ jyutping, url: objectUrl })
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) {
+          console.error(error)
+        }
+      })
+
+    return () => {
+      controller.abort()
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl)
+      }
+    }
+  }, [dictionaryEntry])
 
   useEffect(() => {
     const host = writerHostRef.current
@@ -681,9 +720,15 @@ function App() {
   function playPronunciation() {
     if (!dictionaryEntry || !audioRef.current) return
 
-    audioRef.current.src = getCuhkSoundUrl(dictionaryEntry.jyutping)
+    if (pronunciationAudio?.jyutping !== dictionaryEntry.jyutping) {
+      setStatus('讀音載入中，請稍等一下再按。')
+      return
+    }
+
+    audioRef.current.src = pronunciationAudio.url
+    audioRef.current.currentTime = 0
     audioRef.current.play().catch(() => {
-      setStatus('未能播放讀音，請用 CUHK 粵音韻彙查聽。')
+      setStatus('未能播放讀音，請按 CUHK 聽讀音。')
     })
   }
 
@@ -873,6 +918,9 @@ function App() {
                       <button type="button" onClick={playPronunciation} aria-label={`Play ${selectedCharacter} pronunciation`}>
                         <Volume2 size={16} />
                       </button>
+                      <a href={getCuhkSoundPageUrl(dictionaryEntry.jyutping)} target="_blank" rel="noreferrer">
+                        CUHK 聽
+                      </a>
                     </span>
                   </div>
                   <div>

@@ -462,9 +462,19 @@ button.active,
 .pronunciation-value button {
   aspect-ratio: 1;
   color: #0f8c86;
+  flex: 0 0 auto;
   min-height: 30px;
   padding: 0;
   width: 30px;
+}
+
+.pronunciation-value a {
+  color: #27615f;
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .dictionary-body p,
